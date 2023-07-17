@@ -40,7 +40,7 @@ export default function ProductList() {
                 sliderState: filter.payload};
             case 'categoryFilter':
                 return {...state,
-                categoryFilter: filter.payload.checked ? state.categoryFilter.includes(filter.payload.category) ? state.categoryFilter : [...state.categoryFilter, filter.payload.category] : [...state.categoryFilter.filter((category) => category !== filter.payload.category)]}
+                categoryFilter: filter.payload.checked ? state.categoryFilter.includes(filter.payload.category) ? state.categoryFilter : [...state.categoryFilter, filter.payload.category] : [...state.categoryFilter.filter((_category) => _category !== filter.payload.category)]}
             case 'ratingFilter':
                 return {
                     ...state,
@@ -58,8 +58,16 @@ export default function ProductList() {
         }
     }
     const [state, dispatch] = useReducer(filterReducer, filterState);
-    console.log(state);
-    const filteredArray = prodList;
+    // console.log(state);
+    const testFilter = prodList.filter(({title, price, categoryName, rating}) => {
+        const isSearchMatch = state.textSearch === '' ? true : title.toLowerCase().includes(state.textSearch.toLowerCase());
+        const isPriceMatch = price >= state.sliderState
+        const isCategoryMatch = state.categoryFilter.length === 0 ? true : state.categoryFilter.includes(categoryName.toLowerCase());
+        const isRatingMatch = rating >= state.ratingFilter;
+        return isSearchMatch && isPriceMatch && isCategoryMatch && isRatingMatch;
+    })
+    console.log('testfilter', testFilter, 'state', state);
+    const filteredArray = state.sortFilter === 'none' ? testFilter : state.sortFilter === 'ascending' ? testFilter.sort((a,b) => a.price - b.price) : testFilter.sort((a,b) => b.price - a.price);
     return (
         <>
         <nav>
@@ -87,7 +95,7 @@ export default function ProductList() {
             }}/></div>
             <h4>Category</h4>
             <label><input type='checkbox' onChange={(event) => {dispatch({type: 'categoryFilter', payload: {category: 'fiction', checked: event.target.checked}})}}/>Fiction</label>
-            <label><input type='checkbox' onChange={(event) => {dispatch({type: 'categoryFilter', payload: {category: 'nonfiction', checked: event.target.checked}})}} />Non-fiction</label>
+            <label><input type='checkbox' onChange={(event) => {dispatch({type: 'categoryFilter', payload: {category: 'non-fiction', checked: event.target.checked}})}} />Non-fiction</label>
             <label><input type='checkbox' onChange={(event) => {dispatch({type: 'categoryFilter', payload: {category: 'horror', checked: event.target.checked}})}} />Horror</label>
             <h4>Rating</h4>
             <label><input type='radio' name='rating' onChange={() => dispatch({type: 'ratingFilter', payload: 1})}/>1Stars and above</label>
