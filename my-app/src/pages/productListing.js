@@ -67,7 +67,7 @@ export default function ProductList() {
         return isSearchMatch && isPriceMatch && isCategoryMatch && isRatingMatch;
     })
     console.log('testfilter', testFilter, 'state', state);
-    const filteredArray = state.sortFilter === 'none' ? testFilter : state.sortFilter === 'ascending' ? testFilter.sort((a,b) => a.price - b.price) : testFilter.sort((a,b) => b.price - a.price);
+    const filteredArray = state === filterState ? prodList : (state.sortFilter === 'none' ? testFilter : state.sortFilter === 'ascending' ? testFilter.sort((a,b) => a.price - b.price) : testFilter.sort((a,b) => b.price - a.price))
     return (
         <>
         <nav>
@@ -92,19 +92,20 @@ export default function ProductList() {
             <div>1000</div><div>5000</div>
             <input type='range' min='1000' max='5000' onChange={(event) => {
                 dispatch({type: 'priceFilter', payload: event.target.value})
-            }}/></div>
+                
+            }} value={state.sliderState}/></div>
             <h4>Category</h4>
-            <label><input type='checkbox' onChange={(event) => {dispatch({type: 'categoryFilter', payload: {category: 'fiction', checked: event.target.checked}})}}/>Fiction</label>
-            <label><input type='checkbox' onChange={(event) => {dispatch({type: 'categoryFilter', payload: {category: 'non-fiction', checked: event.target.checked}})}} />Non-fiction</label>
-            <label><input type='checkbox' onChange={(event) => {dispatch({type: 'categoryFilter', payload: {category: 'horror', checked: event.target.checked}})}} />Horror</label>
+            <label><input type='checkbox' onChange={(event) => {dispatch({type: 'categoryFilter', payload: {category: 'fiction', checked: event.target.checked}})}} checked={state.categoryFilter.includes('fiction')}/>Fiction</label>
+            <label><input type='checkbox' onChange={(event) => {dispatch({type: 'categoryFilter', payload: {category: 'non-fiction', checked: event.target.checked}})}} checked={state.categoryFilter.includes('non-fiction')}/>Non-fiction</label>
+            <label><input type='checkbox' onChange={(event) => {dispatch({type: 'categoryFilter', payload: {category: 'horror', checked: event.target.checked}})}} checked={state.categoryFilter.includes('horror')}/>Horror</label>
             <h4>Rating</h4>
-            <label><input type='radio' name='rating' onChange={() => dispatch({type: 'ratingFilter', payload: 1})}/>1Stars and above</label>
-            <label><input type='radio' name='rating' onChange={() => dispatch({type: 'ratingFilter', payload: 2})} />2Stars and above</label>
+            <label><input type='radio' name='rating' onChange={() => dispatch({type: 'ratingFilter', payload: 1})} checked={state.ratingFilter === 1}/>1Stars and above</label>
+            <label><input type='radio' name='rating' onChange={() => dispatch({type: 'ratingFilter', payload: 2})}  />2Stars and above</label>
             <label><input type='radio' name='rating' onChange={() => dispatch({type: 'ratingFilter', payload: 3})} />3Stars and above</label>
             <label><input type='radio' name='rating' onChange={() => dispatch({type: 'ratingFilter', payload: 4})} />4Stars and above</label>
             <h4>Sort By</h4>
-            <label><input type='radio' name='sort' onChange={() => dispatch({type: 'sortFilter', payload: 'ascending'})}/>Price-Low to High</label>
-            <label><input type='radio' name='sort' onChange={() => dispatch({type: 'sortFilter', payload: 'descending'})} />Price-High to Low</label>
+            <label><input type='radio' name='sort' onChange={() => dispatch({type: 'sortFilter', payload: 'ascending'})} checked={state.sortFilter === 'ascending'}/>Price-Low to High</label>
+            <label><input type='radio' name='sort' onChange={() => dispatch({type: 'sortFilter', payload: 'descending'})} checked={state.sortFilter === 'descending'}/>Price-High to Low</label>
         </div>
         {filteredArray.map(({author, title, price, _id}) => <div>
             <Link to={`/productlist/${_id}`}><img alt='bookImg' /></Link>
